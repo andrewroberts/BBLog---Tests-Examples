@@ -1,5 +1,5 @@
 var SCRIPT_NAME = 'BetterLog library test sheet'
-var SCRIPT_VERSION = 'v7'
+var SCRIPT_VERSION = 'v11'
 
 // TODO
 // ----
@@ -358,6 +358,11 @@ function test_log_sheet() {
   log = BBLog.getLog();
   log.info('Written to log that did not exist already');
   
+  log = BBLog.getLog({
+    hideLog: true, 
+    sheetName: 'SHOULD NOT SEE HIDDEN LOG'
+  });
+      
   log.info('!!!!!! ALL SHEET LOG TESTS PASSED !!!!!!');
 
   return;
@@ -446,8 +451,19 @@ function test_log_firebase() {
 } // test_log_firebase()
 
 function sheetAssert_(testString, logSheetArg) {  
+
   var callingfunction = 'test_log_sheet()';
-  var localLogSheet = (typeof logSheetArg === 'undefined') ? logSheet1_ : logSheetArg;
+  
+  if (logSheet1_ === undefined || logSheet1_ === null) {
+  
+    logSheet1_ = spreadsheet_.getSheetByName('Log')
+    
+    if (logSheet1_ === null) {
+      throw new Error('No "Log" tab')
+    }
+  }
+
+  var localLogSheet = (logSheetArg === undefined) ? logSheet1_ : logSheetArg;
   var data = localLogSheet.getDataRange().getValues();
   var numberOfRows = data.length;
   var result = data[numberOfRows - 1][0];
@@ -516,4 +532,9 @@ function test_objects() {
 
 function test_test_objects(a1, a2, a3) {
   test_test_test_objects(arguments)
+}
+
+function test_misc() {
+  var a
+  Logger.log(typeof a === 'undefined')
 }
